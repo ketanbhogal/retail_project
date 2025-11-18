@@ -16,9 +16,18 @@ export default function ReportsPage() {
   const [topProducts, setTopProducts] = useState([]);
   const [timeRange, setTimeRange] = useState("month");
 
-  // prettier-ignore
-  const COLORS = ["#2563eb", "#7c3aed", "#0ea5e9", "#f97316", "#dc2626",
-                  "#059669", "#b91c1c", "#9333ea", "#0284c7", "#d97706"];
+  const COLORS = [
+    "#2563eb",
+    "#7c3aed",
+    "#0ea5e9",
+    "#f97316",
+    "#dc2626",
+    "#059669",
+    "#b91c1c",
+    "#9333ea",
+    "#0284c7",
+    "#d97706",
+  ];
 
   useEffect(() => {
     const loadSales = () => {
@@ -51,14 +60,29 @@ export default function ReportsPage() {
     let cutoff = new Date();
 
     switch (timeRange) {
-      case "day": cutoff.setDate(now.getDate() - 1); break;
-      case "week": cutoff.setDate(now.getDate() - 7); break;
-      case "month": cutoff.setMonth(now.getMonth() - 1); break;
-      case "3month": cutoff.setMonth(now.getMonth() - 3); break;
-      case "6month": cutoff.setMonth(now.getMonth() - 6); break;
-      case "9month": cutoff.setMonth(now.getMonth() - 9); break;
-      case "year": cutoff.setFullYear(now.getFullYear() - 1); break;
-      default: cutoff = new Date(0);
+      case "day":
+        cutoff.setDate(now.getDate() - 1);
+        break;
+      case "week":
+        cutoff.setDate(now.getDate() - 7);
+        break;
+      case "month":
+        cutoff.setMonth(now.getMonth() - 1);
+        break;
+      case "3month":
+        cutoff.setMonth(now.getMonth() - 3);
+        break;
+      case "6month":
+        cutoff.setMonth(now.getMonth() - 6);
+        break;
+      case "9month":
+        cutoff.setMonth(now.getMonth() - 9);
+        break;
+      case "year":
+        cutoff.setFullYear(now.getFullYear() - 1);
+        break;
+      default:
+        cutoff = new Date(0);
     }
 
     const filtered = sales.filter((sale) => new Date(sale.date) >= cutoff);
@@ -100,12 +124,16 @@ export default function ReportsPage() {
     setSummary(summaryData);
     setChartData(Object.entries(byPeriod));
 
-    const sorted = Object.entries(productStats)
-      .sort((a, b) => b[1].qty - a[1].qty)
-      .slice(0, 5);
+    const sorted = Object.entries(productStats).sort(
+      (a, b) => b[1].qty - a[1].qty
+    );
 
-    setTopProducts(sorted);
-    setProfitChartData(sorted.map(([name, data]) => [name, data.profit]));
+    setTopProducts(sorted.slice(0, 5));
+
+    // ✅ FIX: Only 5 products in profit chart
+    setProfitChartData(
+      sorted.slice(0, 5).map(([name, data]) => [name, data.profit])
+    );
   };
 
   const formatNumber = (n) =>
@@ -210,12 +238,10 @@ Transactions: ${summary.transactions}
   };
 
   return (
-    <section className="p-8 bg-gradient-to-br from-gray-50 to-gray-200 
-      rounded-xl shadow-2xl min-h-[85vh] border border-gray-300">
+    <section className="p-8 bg-gradient-to-br from-gray-50 to-gray-200 rounded-xl shadow-2xl min-h-[85vh] border border-gray-300">
 
       {/* HEADER */}
-      <div className="flex justify-between items-center mb-8 
-          bg-white p-4 rounded-xl shadow-md border">
+      <div className="flex justify-between items-center mb-8 bg-white p-4 rounded-xl shadow-md border">
         <h2 className="text-3xl font-bold text-gray-800 tracking-tight">
           📊 Reports Dashboard
         </h2>
@@ -224,8 +250,7 @@ Transactions: ${summary.transactions}
           <select
             value={timeRange}
             onChange={(e) => setTimeRange(e.target.value)}
-            className="border border-gray-300 rounded-md px-4 py-2 text-sm 
-              shadow-sm hover:border-gray-400 transition"
+            className="border border-gray-300 rounded-md px-4 py-2 text-sm shadow-sm hover:border-gray-400 transition"
           >
             <option value="day">Day</option>
             <option value="week">Week</option>
@@ -238,8 +263,7 @@ Transactions: ${summary.transactions}
 
           <button
             onClick={downloadReport}
-            className="px-5 py-2 bg-blue-600 text-white font-medium 
-              rounded-md hover:bg-blue-700 shadow-md"
+            className="px-5 py-2 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 shadow-md"
           >
             Download
           </button>
@@ -248,32 +272,28 @@ Transactions: ${summary.transactions}
 
       {/* SUMMARY CARDS */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
-        <div className="bg-gradient-to-br from-blue-50 to-blue-100 border p-5 
-            rounded-xl shadow-md text-center">
+        <div className="bg-gradient-to-br from-blue-50 to-blue-100 border p-5 rounded-xl shadow-md text-center">
           <h4 className="text-sm text-gray-600">Total Revenue</h4>
           <p className="text-2xl font-extrabold text-blue-700 mt-1">
             ₹{formatNumber(summary.revenue)}
           </p>
         </div>
 
-        <div className="bg-gradient-to-br from-green-50 to-green-100 border p-5 
-            rounded-xl shadow-md text-center">
+        <div className="bg-gradient-to-br from-green-50 to-green-100 border p-5 rounded-xl shadow-md text-center">
           <h4 className="text-sm text-gray-600">Total Profit</h4>
           <p className="text-2xl font-extrabold text-green-700 mt-1">
             ₹{formatNumber(summary.profit)}
           </p>
         </div>
 
-        <div className="bg-gradient-to-br from-indigo-50 to-indigo-100 border p-5 
-            rounded-xl shadow-md text-center">
+        <div className="bg-gradient-to-br from-indigo-50 to-indigo-100 border p-5 rounded-xl shadow-md text-center">
           <h4 className="text-sm text-gray-600">Items Sold</h4>
           <p className="text-2xl font-extrabold text-indigo-700 mt-1">
             {formatNumber(summary.itemsSold)}
           </p>
         </div>
 
-        <div className="bg-gradient-to-br from-gray-50 to-gray-200 border p-5 
-            rounded-xl shadow-md text-center">
+        <div className="bg-gradient-to-br from-gray-50 to-gray-200 border p-5 rounded-xl shadow-md text-center">
           <h4 className="text-sm text-gray-600">Transactions</h4>
           <p className="text-2xl font-extrabold text-gray-700 mt-1">
             {summary.transactions}
@@ -295,7 +315,7 @@ Transactions: ${summary.transactions}
       {/* PROFIT CHART */}
       <div className="bg-white border rounded-xl p-6 mb-10 shadow-lg">
         <h4 className="text-xl font-semibold mb-4 text-gray-700">
-          Profit Comparison – Top Products
+          Profit Comparison – Top 5 Products ({timeRange.toUpperCase()})
         </h4>
         <canvas
           id="profitChart"
@@ -306,7 +326,7 @@ Transactions: ${summary.transactions}
       {/* TOP PRODUCTS LIST */}
       <div className="bg-white border rounded-xl p-6 shadow-lg">
         <h4 className="text-xl font-semibold mb-4 text-gray-800">
-        Top 5 Best-Selling Products
+          Top 5 Best-Selling Products
         </h4>
 
         {topProducts.length === 0 ? (
@@ -316,8 +336,7 @@ Transactions: ${summary.transactions}
             {topProducts.map(([name, stats], i) => (
               <li
                 key={i}
-                className="flex justify-between bg-gray-50 border p-4 
-                rounded-lg shadow-sm hover:bg-gray-100 transition"
+                className="flex justify-between bg-gray-50 border p-4 rounded-lg shadow-sm hover:bg-gray-100 transition"
               >
                 <span className="font-medium text-gray-800">
                   {i + 1}. {name}
